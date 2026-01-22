@@ -1,0 +1,138 @@
+{
+  "template": {
+    "mappings": {
+      /* =========================
+       * RUNTIME FIELDS (ECS VIEW)
+       * ========================= */
+      "runtime": {
+        /* -------- USER (ROOT) -------- */
+        "user.name": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.user.name')&&doc['real.user.name'].size()>0){for(def v:doc['real.user.name'])emit(v);}else if(doc.containsKey('pseudo.user.name')&&doc['pseudo.user.name'].size()>0){for(def v:doc['pseudo.user.name'])emit(v);}"
+          }
+        },
+        "user.full_name": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.user.full_name')&&doc['real.user.full_name'].size()>0){for(def v:doc['real.user.full_name'])emit(v);}else if(doc.containsKey('pseudo.user.full_name')&&doc['pseudo.user.full_name'].size()>0){for(def v:doc['pseudo.user.full_name'])emit(v);}"
+          }
+        },
+        "user.first_name": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.user.first_name')&&doc['real.user.first_name'].size()>0){for(def v:doc['real.user.first_name'])emit(v);}else if(doc.containsKey('pseudo.user.first_name')&&doc['pseudo.user.first_name'].size()>0){for(def v:doc['pseudo.user.first_name'])emit(v);}"
+          }
+        },
+        "user.last_name": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.user.last_name')&&doc['real.user.last_name'].size()>0){for(def v:doc['real.user.last_name'])emit(v);}else if(doc.containsKey('pseudo.user.last_name')&&doc['pseudo.user.last_name'].size()>0){for(def v:doc['pseudo.user.last_name'])emit(v);}"
+          }
+        },
+        "user.email": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.user.email')&&doc['real.user.email'].size()>0){for(def v:doc['real.user.email'])emit(v);}else if(doc.containsKey('pseudo.user.email')&&doc['pseudo.user.email'].size()>0){for(def v:doc['pseudo.user.email'])emit(v);}"
+          }
+        },
+        /* -------- NETWORK ENTITIES -------- */
+        "source.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.source.ip')&&doc['real.source.ip'].size()>0){for(def v:doc['real.source.ip'])emit(v);}else if(doc.containsKey('pseudo.source.ip')&&doc['pseudo.source.ip'].size()>0){for(def v:doc['pseudo.source.ip'])emit(v);}"
+          }
+        },
+        "destination.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.destination.ip')&&doc['real.destination.ip'].size()>0){for(def v:doc['real.destination.ip'])emit(v);}else if(doc.containsKey('pseudo.destination.ip')&&doc['pseudo.destination.ip'].size()>0){for(def v:doc['pseudo.destination.ip'])emit(v);}"
+          }
+        },
+        "client.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.client.ip')&&doc['real.client.ip'].size()>0){for(def v:doc['real.client.ip'])emit(v);}else if(doc.containsKey('pseudo.client.ip')&&doc['pseudo.client.ip'].size()>0){for(def v:doc['pseudo.client.ip'])emit(v);}"
+          }
+        },
+        "server.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.server.ip')&&doc['real.server.ip'].size()>0){for(def v:doc['real.server.ip'])emit(v);}else if(doc.containsKey('pseudo.server.ip')&&doc['pseudo.server.ip'].size()>0){for(def v:doc['pseudo.server.ip'])emit(v);}"
+          }
+        },
+        "observer.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.observer.ip')&&doc['real.observer.ip'].size()>0){for(def v:doc['real.observer.ip'])emit(v);}else if(doc.containsKey('pseudo.observer.ip')&&doc['pseudo.observer.ip'].size()>0){for(def v:doc['pseudo.observer.ip'])emit(v);}"
+          }
+        },
+        "host.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.host.ip')&&doc['real.host.ip'].size()>0){for(def v:doc['real.host.ip'])emit(v);}else if(doc.containsKey('pseudo.host.ip')&&doc['pseudo.host.ip'].size()>0){for(def v:doc['pseudo.host.ip'])emit(v);}"
+          }
+        },
+        /* -------- HOST / OBSERVER NAMES -------- */
+        "host.name": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.host.name')&&doc['real.host.name'].size()>0){for(def v:doc['real.host.name'])emit(v);}else if(doc.containsKey('pseudo.host.name')&&doc['pseudo.host.name'].size()>0){for(def v:doc['pseudo.host.name'])emit(v);}"
+          }
+        },
+        "host.hostname": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.host.hostname')&&doc['real.host.hostname'].size()>0){for(def v:doc['real.host.hostname'])emit(v);}else if(doc.containsKey('pseudo.host.hostname')&&doc['pseudo.host.hostname'].size()>0){for(def v:doc['pseudo.host.hostname'])emit(v);}"
+          }
+        },
+        "observer.hostname": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.observer.hostname')&&doc['real.observer.hostname'].size()>0){for(def v:doc['real.observer.hostname'])emit(v);}else if(doc.containsKey('pseudo.observer.hostname')&&doc['pseudo.observer.hostname'].size()>0){for(def v:doc['pseudo.observer.hostname'])emit(v);}"
+          }
+        },
+        /* -------- RELATED -------- */
+        "related.user": {
+          "type": "keyword",
+          "script": {
+            "source": "if(doc.containsKey('real.related.user')&&doc['real.related.user'].size()>0){for(def v:doc['real.related.user'])emit(v);}else if(doc.containsKey('pseudo.related.user')&&doc['pseudo.related.user'].size()>0){for(def v:doc['pseudo.related.user'])emit(v);}"
+          }
+        },
+        "related.ip": {
+          "type": "ip",
+          "script": {
+            "source": "if(doc.containsKey('real.related.ip')&&doc['real.related.ip'].size()>0){for(def v:doc['real.related.ip'])emit(v);}else if(doc.containsKey('pseudo.related.ip')&&doc['pseudo.related.ip'].size()>0){for(def v:doc['pseudo.related.ip'])emit(v);}"
+          }
+        }
+      },
+      /* =========================
+       * DYNAMIC TEMPLATES (STORAGE)
+       * ========================= */
+      "dynamic_templates": [
+        {
+          "real_pseudo_ip": {
+            "path_match": [
+              "real.*.ip",
+              "pseudo.*.ip"
+            ],
+            "mapping": { "type": "ip" }
+          }
+        },
+        {
+          "real_pseudo_keywords": {
+            "path_match": [
+              "real.*",
+              "pseudo.*"
+            ],
+            "mapping": {
+              "type": "keyword",
+              "ignore_above": 1024
+            },
+            "unmatch_mapping_type": "object"
+          }
+        }
+      ]
+    }
+  }
+}

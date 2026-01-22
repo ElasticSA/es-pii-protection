@@ -1,0 +1,10 @@
+{
+  "description": "Custom pipeline invoking PII protection",
+  "processors": [
+    {
+      "pipeline": {
+        "name": "pii-protection"
+      }
+    }
+  ]
+}

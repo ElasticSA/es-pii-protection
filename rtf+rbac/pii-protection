@@ -1,0 +1,160 @@
+{
+  "description": "Move PII to real.*, pseudonymise into pseudo.*; anonymise IPs only for org CIDRs",
+  "processors": [
+    {
+      "script": {
+        "lang": "painless",
+        "params": {
+          "hmac_key": "{{_ingest.ingest.pii.hmac.key}}",
+          "org_ips": [
+            "10.0.0.0/8",
+            "172.16.0.0/12",
+            "192.168.0.0/16",
+            "fc00::/7",
+            "fe80::/10"
+          ]
+        },
+        "source": """
+/* =========================
+ * CRYPTO SETUP
+ * ========================= */
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+import java.net.InetAddress;
+import java.math.BigInteger;
+String keyMaterial = params.hmac_key;
+if (keyMaterial == null || keyMaterial.length() == 0) return;
+Mac mac = Mac.getInstance("HmacSHA256");
+mac.init(new SecretKeySpec(keyMaterial.getBytes("UTF-8"), "HmacSHA256"));
+String hmacString(String v) {
+  byte[] digest = mac.doFinal(v.getBytes("UTF-8"));
+  return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+}
+/* =========================
+ * IP / CIDR UTILITIES
+ * ========================= */
+class Cidr {
+  BigInteger net;
+  int prefix;
+  int bits;
+  Cidr(String cidr) {
+    String[] p = cidr.split('/');
+    InetAddress addr = InetAddress.getByName(p[0]);
+    prefix = Integer.parseInt(p[1]);
+    byte[] b = addr.getAddress();
+    bits = b.length * 8;
+    net = new BigInteger(1, b).shiftRight(bits - prefix)
+          .shiftLeft(bits - prefix);
+  }
+  boolean contains(byte[] addr) {
+    BigInteger v = new BigInteger(1, addr);
+    BigInteger masked = v.shiftRight(bits - prefix)
+                         .shiftLeft(bits - prefix);
+    return masked.equals(net);
+  }
+}
+List cidrs = [];
+for (def c : params.org_ips) {
+  cidrs.add(new Cidr(c));
+}
+boolean isOrgIp(String ip) {
+  InetAddress addr = InetAddress.getByName(ip);
+  byte[] b = addr.getAddress();
+  for (def c : cidrs) {
+    if (c.bits == b.length * 8 && c.contains(b)) return true;
+  }
+  return false;
+}
+String anonymiseIp(String ip) {
+  InetAddress addr = InetAddress.getByName(ip);
+  byte[] orig = addr.getAddress();
+  boolean isV4 = orig.length == 4;
+  int keepBits = isV4 ? 16 : 64;
+  int keepBytes = keepBits / 8;
+  byte[] anon = mac.doFinal(orig);
+  byte[] out = new byte[orig.length];
+  for (int i = 0; i < orig.length; i++) {
+    out[i] = (i < keepBytes) ? orig[i] : anon[i];
+  }
+  return InetAddress.getByAddress(out).getHostAddress();
+}
+/* =========================
+ * UTILITIES
+ * ========================= */
+def ensurePath(def root, String[] parts) {
+  def p = root;
+  for (int i = 0; i < parts.length - 1; i++) {
+    if (p[parts[i]] == null) p[parts[i]] = [:];
+    p = p[parts[i]];
+  }
+  return p;
+}
+def pseudonymise(def value, String fieldKey, boolean isIp) {
+  if (value == null) return null;
+  if (value instanceof List) {
+    def out = [];
+    for (def v : value) {
+      out.add(pseudonymise(v, fieldKey, isIp));
+    }
+    return out;
+  }
+  if (value instanceof Map) return null;
+  String s = value.toString();
+  if (isIp) {
+    if (isOrgIp(s)) {
+      return anonymiseIp(s);
+    } else {
+      return s; // leave external IPs unchanged
+    }
+  } else {
+    return fieldKey + '-' + hmacString(s);
+  }
+}
+/* =========================
+ * CORE RECURSIVE WALKER
+ * ========================= */
+void walk(def current, String path) {
+  if (!(current instanceof Map)) return;
+  for (def key : new ArrayList(current.keySet())) {
+    def value = current[key];
+    String fullPath = path.length() == 0 ? key : path + "." + key;
+    boolean isIpField = key == 'ip' || key.endsWith('_ip');
+    boolean isPiiField = key in [
+      'name','full_name','first_name','last_name','email',
+      'username','hostname','mac','id','domain','roles','ip'
+    ];
+    if (isPiiField && !(value instanceof Map)) {
+      String[] parts = fullPath.split('\\.');
+      if (ctx.real == null) ctx.real = [:];
+      if (ctx.pseudo == null) ctx.pseudo = [:];
+      def realParent = ensurePath(ctx.real, parts);
+      def pseudoParent = ensurePath(ctx.pseudo, parts);
+      realParent[parts[parts.length - 1]] = value;
+      pseudoParent[parts[parts.length - 1]] =
+        pseudonymise(value, key, isIpField);
+      current.remove(key);
+    }
+    else if (value instanceof Map) {
+      walk(value, fullPath);
+      if (value.isEmpty()) current.remove(key);
+    }
+  }
+}
+/* =========================
+ * EXECUTION
+ * ========================= */
+walk(ctx, "");
+"""
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "error.message",
+        "value": "PII protection pipeline failed"
+      }
+    }
+  ]
+}

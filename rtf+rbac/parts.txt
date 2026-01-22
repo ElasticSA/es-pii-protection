@@ -1,0 +1,9 @@
+# Kibana console command to add the various parts
+# Note the contents are in the accompanying files
+
+PUT _component_template/logs@custom
+PUT _component_template/metrics@custom
+PUT _ingest/pipeline/logs@custom
+PUT _ingest/pipeline/metrics@custom
+PUT _ingest/pipeline/pii-protection
+
