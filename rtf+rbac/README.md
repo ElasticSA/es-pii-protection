@@ -107,6 +107,33 @@ user.email = alice@example.com
 
 No dashboards, visualizations, or queries need to change.
 
+### Exmaple role
+
+This role will allow access to logs-* and metrics-* however all PII will be 
+obscured for them
+
+```
+POST /_security/role/pii_prevent_real
+{
+  "cluster": [
+    "monitor"
+  ],
+  "indices": [
+    {
+      "names": [ "logs-*", "metrics-*" ],
+      "privileges": [ "read" ],
+      "field_security": {
+        "grant": [ "*" ],
+        "except": [ "real.*" ]
+      }
+    }
+  ]
+}
+```
+
+Remove the field_security part, to create a role that would allow access to 
+the real PII values.
+
 ---
 
 ## Role‑Based Access Control
