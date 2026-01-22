@@ -128,9 +128,7 @@ Users with this role:
 - see pseudonymised values via runtime ECS fields
 - can still use dashboards, alerts, and ECS-‑dependent features
 
----
-
-### Exmaple role
+#### Exmaple role
 
 This role will allow access to logs-* and metrics-* however all PII will be 
 obscured for them
