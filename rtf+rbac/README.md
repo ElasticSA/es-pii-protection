@@ -107,6 +107,29 @@ user.email = alice@example.com
 
 No dashboards, visualizations, or queries need to change.
 
+---
+
+## Role‑Based Access Control
+
+### Preventing access to real PII
+
+Most users should not see raw PII,.
+
+Q role like the following prevents access to all `real.*` fields while still
+allowing ECS fields to function via runtime fields:
+
+- Index privileges: read on logs-* and metrics-*
+- Field‑level security: grant all fields except `real.*`
+- Kibana read access
+
+Users with this role:
+
+- cannot access real.*
+- see pseudonymised values via runtime ECS fields
+- can still use dashboards, alerts, and ECS-‑dependent features
+
+---
+
 ### Exmaple role
 
 This role will allow access to logs-* and metrics-* however all PII will be 
@@ -131,36 +154,12 @@ POST /_security/role/pii_prevent_real
 }
 ```
 
-Remove the field_security part, to create a role that would allow access to 
-the real PII values.
-
----
-
-## Role‑Based Access Control
-
-### Preventing access to real PII
-
-Most users should not see raw PII,.
-
-Q role like the following prevents access to all `real.*` fields while still
-allowing ECS fields to function via runtime fields:
-
-- Index privileges: read on logs-* and metrics-*
-- Field‑level security: grant all fields except `real.*`
-- Kibana read access
-
-Users with this role:
-
-- cannot access real.*
-- see pseudonymised values via runtime ECS fields
-- can still use dashboards, alerts, and ECS-‑dependent features
-
----
-
 ### Allowing access to real PII
 
 Users with additional privileges (for example security, fraud, or compliance
-teams) can be granted access to `real.*`.
+teams) can be granted access to `real.*`. For example removing the field_security part
+(in role above), to create a role that would allow access to 
+the real PII values.
 
 For those users:
 
