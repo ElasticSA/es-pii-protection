@@ -1,6 +1,6 @@
 # PII Protection Patterns for Elasticsearch
 
-**NB: This is not and official component from Elastic, but rather a project of its employee(s)**
+**NB: This is not an official component from Elastic, but rather a project of its employee(s)**
 
 This project documents multiple approaches to achieving **Personally Identifiable Information (PII) protection** in Elasticsearch when it is used as a **unified data platform** by many users with different roles and access requirements.
 The approaches described here are applicable to environments subject to **data‑protection and privacy regulations**, such as:
