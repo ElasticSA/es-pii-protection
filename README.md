@@ -58,3 +58,32 @@ This allows:
 See [`rtf+rbac/`](./rtf+rbac) for details.
 
 ---
+
+---
+
+### ✅ Shared‑Key Encryption (SKENC)
+
+This approach encrypts PII **before it is indexed** using a shared secret key.
+
+- Encryption occurs outside Elasticsearch (e.g. in Logstash)
+- Elasticsearch stores only encrypted values
+- Decryption is performed by trusted tooling outside the cluster
+- Kibana and runtime fields never see plaintext PII
+
+This approach is suitable when:
+
+- Elasticsearch must not be trusted with PII
+- Cryptographic protection is required in addition to access control
+- PII access must be auditable and tightly controlled
+
+See [`skenc/`](./skenc) for details.
+
+---
+
+## Scope and Status
+
+- These patterns are **reference designs**, not turnkey products
+- They may require adaptation for specific environments
+- Both approaches are under active development
+
+Feedback, discussion, and iteration are encouraged.

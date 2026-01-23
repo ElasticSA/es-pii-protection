@@ -173,3 +173,11 @@ Runtime fields are used because they:
 
 - allow **late binding** of values
 - respect **field‑llevel security**
+
+---
+
+## Status
+
+This approach is a working reference implementation.
+It is expected to evolve as additional edge cases and operational
+requirements are explored.
