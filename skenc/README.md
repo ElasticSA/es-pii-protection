@@ -12,7 +12,7 @@ Unlike access‑control‑based approaches, SKENC ensures that Elasticsearch
 ## Problem Addressed
 In some environments:
 
-- Elasticsearch cannot be fully trusted with sensitive data
+- Elasticsearch administrators must not be trusted with PII
 - PII access must be cryptographically controlled
 - Access via Kibana or APIs must never expose raw values
 - Regulatory or contractual requirements mandate encryption before indexing
@@ -120,12 +120,12 @@ header "Content-Type: application/json"
 
 ## Security Model
 
-- Elasticsearch never sees plaintext PII
+- Elasticsearch administrators cannot see plaintext PII
 - Access to encrypted data does not imply access to PII
 - Possession of the shared key is required for decryption
 - Key management and rotation are external concerns
 
-This model aligns with **zero‑trust assumptions** for the data platform.
+This model aligns with **zero‑trust assumptions** for administrative access.
 
 ---
 

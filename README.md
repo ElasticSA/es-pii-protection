@@ -50,14 +50,15 @@ This approach combines:
 - **Ingest pipelines** to isolate PII at write time
 - **Runtime fields** to present ECS‑compatible views at read time
 - **Field‑level security (RBAC)** to control access to sensitive fields
+
 This allows:
+
 - the same index to serve multiple audiences
 - PII to be stored securely
 - ECS‑dependent features to continue working unchanged
 
 See [`rtf+rbac/`](./rtf+rbac) for details.
 
----
 
 ---
 
@@ -72,7 +73,7 @@ This approach encrypts PII **before it is indexed** using a shared secret key.
 
 This approach is suitable when:
 
-- Elasticsearch must not be trusted with PII
+- Elasticsearch administrators must not be trusted with PII
 - Cryptographic protection is required in addition to access control
 - PII access must be auditable and tightly controlled
 
